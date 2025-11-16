@@ -1,0 +1,9 @@
+pandas
+numpy
+scipy
+matplotlib
+plotly
+yfinance    # for quick BTC price scraping to start
+arch        # for GARCH modelling
+statsmodels
+streamlit   # dashboard framework
