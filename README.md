@@ -1,4 +1,4 @@
-# btc-vol-lab
+# btc-volatility-lab
 
 A Bitcoin volatility modelling lab aimed at:
 
