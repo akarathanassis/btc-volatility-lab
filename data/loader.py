@@ -9,53 +9,38 @@ This module currently provides:
 
 from pathlib import Path
 import pandas as pd
-import yfinance as yf
+import requests
+import glob
+import os
+
+
+BASE = "https://api.binance.com"
+endpoint = "/api/v3/klines"
 
 
 # Locate project-level /data directory (two levels up from this file)
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DATA_DIR = Path(__file__).resolve().parent
 DATA_DIR.mkdir(exist_ok=True)  # ensure directory exists
 
 
-def load_btc_ohlc(period: str = "2y", interval: str = "1h", save: bool = True) -> pd.DataFrame:
-    """
-    Load BTC OHLCV data from Yahoo Finance (BTC-USD ticker).
+def get_klines(symbol="BTCUSDT", interval="1h", limit=1000):
+    print("Downloading klines data from Binance...")
+    url = BASE + endpoint
+    params = {"symbol": symbol, "interval": interval, "limit": limit}
+    data = requests.get(url, params=params).json()
 
-    Parameters
-    ----------
-    period : str
-        Lookback period (e.g., '1y', '2y', 'max').
-    interval : str
-        Candle interval (e.g., '1h', '1d', '15m').
-    save : bool
-        Whether to save the downloaded dataframe to /data/.
+    cols = [
+        "open_time","open","high","low","close","volume",
+        "close_time","quote_volume","num_trades",
+        "tbbv","tbqv","ignore"
+    ]
 
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame indexed by timestamp with:
-        ['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
-    """
+    df = pd.DataFrame(data, columns=cols)
 
-    print(f"Downloading BTC-USD data from Yahoo Finance: period={period}, interval={interval}")
+    # convert numeric columns
+    num_cols = cols[1:-1]
+    df[num_cols] = df[num_cols].apply(pd.to_numeric)
+    df["open_time"] = pd.to_datetime(df["open_time"], unit="ms")
+    df["close_time"] = pd.to_datetime(df["close_time"], unit="ms")
 
-    df = yf.download(
-        "BTC-USD",
-        period=period,
-        interval=interval,
-        auto_adjust=False,
-        progress=False,
-    )
-
-    # Ensure datetime index & drop empty rows
-    df.dropna(inplace=True)
-    df.index = pd.to_datetime(df.index)
-
-    # Save to file
-    if save:
-        out_path = DATA_DIR / f"btc_ohlc_{period}_{interval}.parquet"
-        df.to_parquet(out_path)
-        print(f"Saved data to {out_path}")
-
-    print(f"Loaded {len(df)} rows of BTC-USD price data")
     return df
