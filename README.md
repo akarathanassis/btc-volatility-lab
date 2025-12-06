@@ -3,7 +3,6 @@
 A Bitcoin volatility modelling lab aimed at:
 
 - Modelling and forecasting BTC volatility
-- Connecting model outputs to actionable views for Polymarket-style bets
 - Serving a visualisation dashboard of key volatility metrics
 
 ## Structure
