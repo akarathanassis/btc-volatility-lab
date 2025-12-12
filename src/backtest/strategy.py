@@ -45,3 +45,26 @@ class BuyAndHoldStrategy(BaseStrategy):
         weights = pd.Series(1.0, index=data.index, name="target_weight")
         return weights
     
+class OrderImbalanceStrategy(BaseStrategy):
+    """
+    A simple strategy that goes long when the order book shows more buy-side volume
+    and goes to cash when sell-side volume dominates.
+    """
+    def __init__(self, threshold: float = 1.5): 
+        super().__init__(StrategyConfig(name="OrderImbalance", params={"threshold": threshold}))
+        self.threshold = threshold
+
+    def generate_weights(self, data: pd.DataFrame) -> pd.Series:
+        """
+        data must contain an 'imbalance' column (from compute_orderbook_features)
+        """
+        imbalance = data["imbalance"]
+
+        weights = pd.Series(0.0, index=data.index)
+
+        weights[imbalance > self.threshold] = 1.0   # long
+        weights[imbalance < -self.threshold] = -1.0 # short
+        # 0.0 otherwise
+
+        return weights
+    

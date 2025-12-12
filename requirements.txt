@@ -3,7 +3,7 @@ numpy
 scipy
 matplotlib
 plotly
-yfinance    # for quick BTC price scraping to start
-arch        # for GARCH modelling
+yfinance    
+arch        
 statsmodels
-streamlit   # dashboard framework
+streamlit   
