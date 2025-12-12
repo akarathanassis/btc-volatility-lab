@@ -1,13 +1,16 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any, Dict, Optional
+
+
 
 import pandas as pd
 
 @dataclass 
 class StrategyConfig: 
     name: str 
-    params: Dict[str, Any] | None = None
+    params: Optional[Dict[str, Any]] = None
 
 class BaseStrategy(ABC): 
     """

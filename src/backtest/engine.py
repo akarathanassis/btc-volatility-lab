@@ -1,5 +1,6 @@
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 import pandas as pd
 
@@ -24,7 +25,7 @@ class BacktestEngine:
     def __init__(self, 
                 prices: pd.DataFrame, 
                 strategy: BaseStrategy,
-                config: BacktestConfig | None = None, 
+                config: Optional[BacktestConfig] = None, 
         ):
         if "mid" not in prices.columns:
             raise ValueError("Prices DataFrame must contain a 'mid' column.")
